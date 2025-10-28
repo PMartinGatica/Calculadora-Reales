@@ -1,18 +1,25 @@
 // Variables globales para almacenar las tasas
 let exchangeRates = {
     brlToUsd: 0,
-    usdToArs: 0,
+    usdOficialToArs: 0,
+    usdTarjetaToArs: 0,
+    usdMepToArs: 0, // Dólar MEP/Blue usado por apps de PIX
+    impuestosPorcentaje: 65, // 35% PAIS + 30% Ganancias (puede ser ajustado)
+    mepPorcentaje: 10, // % sobre el oficial que suele tener el MEP (ajustable)
     lastUpdate: null
 };
 
 // Elementos del DOM
 const brlInput = document.getElementById('brlAmount');
 const usdValue = document.getElementById('usdValue');
-const arsValue = document.getElementById('arsValue');
+const arsTarjetaValue = document.getElementById('arsTarjetaValue');
+const arsPixValue = document.getElementById('arsPixValue');
 const exchangeRatesDiv = document.getElementById('exchangeRates');
 const lastUpdateSpan = document.getElementById('lastUpdate');
 const comparisonDiv = document.getElementById('comparison');
 const comparisonGrid = document.getElementById('comparisonGrid');
+const impuestosInput = document.getElementById('impuestosSlider');
+const mepInput = document.getElementById('mepSlider');
 
 // Obtener tasas de cambio
 async function fetchExchangeRates() {
@@ -27,7 +34,11 @@ async function fetchExchangeRates() {
         const data = await response.json();
 
         exchangeRates.brlToUsd = data.rates.USD;
-        exchangeRates.usdToArs = data.rates.ARS / data.rates.USD;
+        exchangeRates.usdOficialToArs = data.rates.ARS / data.rates.USD;
+        // Calcular dólar tarjeta con impuestos
+        exchangeRates.usdTarjetaToArs = exchangeRates.usdOficialToArs * (1 + exchangeRates.impuestosPorcentaje / 100);
+        // Calcular dólar MEP (usado por apps de PIX como Belo, DolarApp, Cocos)
+        exchangeRates.usdMepToArs = exchangeRates.usdOficialToArs * (1 + exchangeRates.mepPorcentaje / 100);
         exchangeRates.lastUpdate = new Date();
 
         displayExchangeRates();
@@ -53,7 +64,8 @@ async function fetchExchangeRates() {
 
 // Mostrar tasas de cambio
 function displayExchangeRates() {
-    const brlToArsDirecto = exchangeRates.brlToUsd * exchangeRates.usdToArs;
+    const brlToArsTarjeta = exchangeRates.brlToUsd * exchangeRates.usdTarjetaToArs;
+    const brlToArsMep = exchangeRates.brlToUsd * exchangeRates.usdMepToArs;
 
     exchangeRatesDiv.innerHTML = `
         <div class="rate-item">
@@ -61,12 +73,16 @@ function displayExchangeRates() {
             <span class="rate-value">US$ ${exchangeRates.brlToUsd.toFixed(4)}</span>
         </div>
         <div class="rate-item">
-            <span class="rate-label">1 USD =</span>
-            <span class="rate-value">$ ${exchangeRates.usdToArs.toFixed(2)} ARS</span>
+            <span class="rate-label">1 USD oficial =</span>
+            <span class="rate-value">$ ${exchangeRates.usdOficialToArs.toFixed(2)} ARS</span>
         </div>
-        <div class="rate-item highlight">
-            <span class="rate-label">1 BRL =</span>
-            <span class="rate-value">$ ${brlToArsDirecto.toFixed(2)} ARS</span>
+        <div class="rate-item mep-rate">
+            <span class="rate-label">1 USD MEP/Blue (+${exchangeRates.mepPorcentaje}%) =</span>
+            <span class="rate-value">$ ${exchangeRates.usdMepToArs.toFixed(2)} ARS</span>
+        </div>
+        <div class="rate-item tax-rate">
+            <span class="rate-label">1 USD tarjeta (+${exchangeRates.impuestosPorcentaje}%) =</span>
+            <span class="rate-value">$ ${exchangeRates.usdTarjetaToArs.toFixed(2)} ARS</span>
         </div>
     `;
 }
@@ -85,7 +101,8 @@ function calculateConversion() {
 
     if (brlAmount <= 0) {
         usdValue.textContent = 'US$ 0.00';
-        arsValue.textContent = '$ 0.00';
+        arsTarjetaValue.textContent = '$ 0.00';
+        arsPixValue.textContent = '$ 0.00';
         comparisonDiv.style.display = 'none';
         return;
     }
@@ -93,12 +110,33 @@ function calculateConversion() {
     // BRL → USD
     const usdAmount = brlAmount * exchangeRates.brlToUsd;
 
-    // USD → ARS
-    const arsAmount = usdAmount * exchangeRates.usdToArs;
+    // USD → ARS (con dólar tarjeta)
+    const arsTarjetaAmount = usdAmount * exchangeRates.usdTarjetaToArs;
+
+    // USD → ARS (con dólar MEP para PIX)
+    const arsMepAmount = usdAmount * exchangeRates.usdMepToArs;
+
+    // Calcular ahorro
+    const ahorro = arsTarjetaAmount - arsMepAmount;
+    const ahorroPorcentaje = ((ahorro / arsTarjetaAmount) * 100).toFixed(1);
 
     // Mostrar resultados
     usdValue.textContent = `US$ ${usdAmount.toFixed(2)}`;
-    arsValue.textContent = `$ ${arsAmount.toFixed(2)}`;
+    arsTarjetaValue.textContent = `$ ${arsTarjetaAmount.toFixed(2)}`;
+    arsPixValue.textContent = `$ ${arsMepAmount.toFixed(2)}`;
+
+    // Mostrar ahorro
+    const savingsDiv = document.getElementById('savingsInfo');
+    if (ahorro > 0) {
+        savingsDiv.innerHTML = `
+            <div class="savings-highlight">
+                💰 Ahorrás <strong>$ ${ahorro.toFixed(2)} ARS</strong> (${ahorroPorcentaje}%) pagando con PIX
+            </div>
+        `;
+        savingsDiv.style.display = 'block';
+    } else {
+        savingsDiv.style.display = 'none';
+    }
 
     // Mostrar comparaciones si el valor es mayor a 0
     if (brlAmount > 0) {
@@ -112,11 +150,21 @@ function showComparisons(baseAmount) {
 
     comparisonGrid.innerHTML = commonAmounts.map(amount => {
         const usd = amount * exchangeRates.brlToUsd;
-        const ars = usd * exchangeRates.usdToArs;
+        const arsTarjeta = usd * exchangeRates.usdTarjetaToArs;
+        const arsPix = usd * exchangeRates.usdMepToArs;
         return `
             <div class="comparison-item">
                 <div class="comparison-brl">R$ ${amount}</div>
-                <div class="comparison-ars">$ ${ars.toFixed(2)}</div>
+                <div class="comparison-methods">
+                    <div class="method-price">
+                        <span class="method-icon">💳</span>
+                        <span class="method-value">$ ${arsTarjeta.toFixed(2)}</span>
+                    </div>
+                    <div class="method-price pix">
+                        <span class="method-icon">📱</span>
+                        <span class="method-value">$ ${arsPix.toFixed(2)}</span>
+                    </div>
+                </div>
             </div>
         `;
     }).join('');
@@ -124,8 +172,38 @@ function showComparisons(baseAmount) {
     comparisonDiv.style.display = 'block';
 }
 
+// Actualizar porcentaje de impuestos
+function updateImpuestos(newPercentage) {
+    exchangeRates.impuestosPorcentaje = parseFloat(newPercentage);
+    exchangeRates.usdTarjetaToArs = exchangeRates.usdOficialToArs * (1 + exchangeRates.impuestosPorcentaje / 100);
+    displayExchangeRates();
+    calculateConversion();
+}
+
+// Actualizar porcentaje de MEP
+function updateMep(newPercentage) {
+    exchangeRates.mepPorcentaje = parseFloat(newPercentage);
+    exchangeRates.usdMepToArs = exchangeRates.usdOficialToArs * (1 + exchangeRates.mepPorcentaje / 100);
+    displayExchangeRates();
+    calculateConversion();
+}
+
 // Event listeners
 brlInput.addEventListener('input', calculateConversion);
+
+if (impuestosInput) {
+    impuestosInput.addEventListener('input', (e) => {
+        updateImpuestos(e.target.value);
+        document.getElementById('impuestosValue').textContent = e.target.value + '%';
+    });
+}
+
+if (mepInput) {
+    mepInput.addEventListener('input', (e) => {
+        updateMep(e.target.value);
+        document.getElementById('mepValue').textContent = e.target.value + '%';
+    });
+}
 
 // Permitir solo números y punto decimal
 brlInput.addEventListener('keypress', (e) => {
