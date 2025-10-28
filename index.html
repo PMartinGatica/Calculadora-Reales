@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora BRL a ARS - Viaje a Brasil</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🇧🇷 Calculadora de Precios Brasil → Argentina 🇦🇷</h1>
+            <p class="subtitle">Convierte reales brasileños a pesos argentinos</p>
+        </header>
+
+        <div class="card">
+            <div class="exchange-rates" id="exchangeRates">
+                <div class="loading">Cargando tasas de cambio...</div>
+            </div>
+
+            <div class="calculator">
+                <div class="input-group">
+                    <label for="brlAmount">Precio en Brasil (BRL)</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">R$</span>
+                        <input type="number" id="brlAmount" placeholder="0.00" step="0.01" min="0" autofocus>
+                    </div>
+                </div>
+
+                <div class="conversion-arrow">↓</div>
+
+                <div class="result-group">
+                    <div class="conversion-step">
+                        <span class="step-label">En dólares (USD)</span>
+                        <div class="step-value" id="usdValue">US$ 0.00</div>
+                    </div>
+
+                    <div class="conversion-step final">
+                        <span class="step-label">En pesos argentinos (ARS)</span>
+                        <div class="step-value" id="arsValue">$ 0.00</div>
+                    </div>
+                </div>
+
+                <div class="comparison" id="comparison" style="display: none;">
+                    <h3>Comparación rápida:</h3>
+                    <div class="comparison-grid" id="comparisonGrid"></div>
+                </div>
+            </div>
+
+            <div class="info">
+                <p><strong>¿Cómo funciona?</strong></p>
+                <p>Las tarjetas de crédito convierten: BRL → USD → ARS</p>
+                <p class="note">Tasas obtenidas de APIs públicas. Pueden aplicarse comisiones adicionales según tu banco.</p>
+            </div>
+        </div>
+
+        <footer>
+            <p>Última actualización: <span id="lastUpdate">-</span></p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
