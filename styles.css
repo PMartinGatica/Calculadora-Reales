@@ -217,6 +217,51 @@ header h1 {
     color: var(--brazil-dark-green);
 }
 
+/* === SECCIÓN 5: CONFIGURACIÓN AVANZADA === */
+.advanced-config {
+    margin: 25px 0;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.advanced-config summary {
+    padding: 15px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--dark-gray);
+    user-select: none;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.advanced-config summary::-webkit-details-marker {
+    display: none;
+}
+
+.advanced-config summary::before {
+    content: '▶';
+    display: inline-block;
+    transition: transform 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.advanced-config[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.advanced-config summary:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+}
+
+.config-content {
+    padding: 20px;
+    background: white;
+}
+
 /* Configuración de tasas - Mobile first */
 .config-section {
     display: grid;
@@ -228,7 +273,7 @@ header h1 {
 .config-item {
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
     border-radius: 12px;
-    padding: 18px;
+    padding: 15px;
     border-left: 4px solid var(--argentina-blue);
 }
 
@@ -295,21 +340,17 @@ header h1 {
     font-size: 1rem;
 }
 
-/* Calculadora */
-.calculator {
-    margin-bottom: 30px;
+/* === SECCIÓN 1: INPUT PRINCIPAL === */
+.input-section {
+    margin-bottom: 25px;
 }
 
-.input-group {
-    margin-bottom: 24px;
-}
-
-.input-group label {
+.main-label {
     display: block;
     font-weight: 700;
     margin-bottom: 12px;
     color: var(--dark-gray);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
 }
 
 .input-wrapper {
@@ -350,120 +391,88 @@ input[type="number"]::-webkit-outer-spin-button {
     opacity: 1;
 }
 
-.conversion-arrow {
-    text-align: center;
-    font-size: 2.5rem;
-    color: var(--brazil-green);
-    margin: 20px 0;
-    animation: bounce 2s infinite;
-}
-
-/* Resultados */
-.result-group {
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.conversion-step.usd {
-    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-    padding: 20px;
-    border-radius: 14px;
-    border-left: 4px solid var(--info);
-    text-align: center;
-}
-
-.step-label {
-    display: block;
-    font-size: 0.9rem;
-    color: var(--gray);
-    margin-bottom: 8px;
-    font-weight: 600;
-}
-
-/* Mobile first - tamaños de valores */
-.step-value {
-    font-size: 1.4rem;
-    font-weight: 800;
-    color: var(--info);
-}
-
-/* Métodos de pago - Mobile first */
-.payment-methods {
+/* === SECCIÓN 2: RESULTADOS PRINCIPALES === */
+.results-main {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 15px;
+    margin-bottom: 20px;
 }
 
-.payment-option {
-    border-radius: 14px;
+.result-card {
+    border-radius: 16px;
     padding: 20px;
-    text-align: center;
-    transition: all 0.3s ease;
     border: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
 }
 
-.payment-option:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-}
-
-.pix-option {
+.pix-card {
     background: linear-gradient(135deg, #e0f7f5 0%, #b2dfdb 100%);
     border-color: var(--pix-turquoise);
+    box-shadow: 0 4px 15px rgba(50, 188, 173, 0.3);
 }
 
-.card-option {
+.credit-card {
     background: linear-gradient(135deg, #ffe0b2 0%, #ffcc80 100%);
     border-color: var(--warning);
+    box-shadow: 0 4px 15px rgba(255, 152, 0, 0.2);
 }
 
-.payment-header {
+.result-header {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
+    gap: 12px;
+    margin-bottom: 15px;
 }
 
-.payment-icon {
-    font-size: 1.5rem;
+.result-icon {
+    font-size: 2rem;
+    line-height: 1;
 }
 
-.payment-title {
-    font-size: 0.85rem;
-    font-weight: 600;
+.result-method {
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--dark-gray);
+    line-height: 1.2;
 }
 
-/* Mobile first */
-.payment-value {
-    font-size: 1.5rem;
+.result-apps {
+    font-size: 0.75rem;
+    color: var(--gray);
+    line-height: 1;
+}
+
+.result-amount {
+    font-size: 2rem;
     font-weight: 800;
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    line-height: 1;
 }
 
-.pix-option .payment-value {
+.pix-card .result-amount {
     color: var(--pix-dark);
 }
 
-.card-option .payment-value {
+.credit-card .result-amount {
     color: #ef6c00;
 }
 
-.payment-badge {
+.result-badge {
     display: inline-block;
-    padding: 4px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 600;
     background: rgba(0, 0, 0, 0.1);
     color: var(--dark-gray);
 }
 
-.payment-badge.best {
-    background: linear-gradient(90deg, var(--brazil-green) 0%, var(--pix-turquoise) 100%);
+.result-badge.best {
+    background: linear-gradient(90deg, var(--brazil-green) 0%, var(--brazil-light-green) 100%);
     color: white;
+    box-shadow: 0 2px 8px rgba(0, 156, 59, 0.4);
 }
 
 /* Ahorro */
@@ -665,7 +674,7 @@ footer {
     }
 }
 
-/* Responsive - Ajustes para desktop */
+/* === RESPONSIVE - DESKTOP === */
 @media (min-width: 769px) {
     body {
         padding: 20px;
@@ -679,26 +688,27 @@ footer {
         font-size: 1.1rem;
     }
 
+    .main-label {
+        font-size: 1.2rem;
+    }
+
     .config-section {
         grid-template-columns: 1fr 1fr;
         gap: 15px;
     }
 
-    .payment-methods {
+    .results-main {
         grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .result-amount {
+        font-size: 2.5rem;
     }
 
     input[type="number"] {
         font-size: 1.8rem;
         padding: 18px 18px 18px 60px;
-    }
-
-    .payment-value {
-        font-size: 1.8rem;
-    }
-
-    .step-value {
-        font-size: 1.8rem;
     }
 
     .comparison-grid {
