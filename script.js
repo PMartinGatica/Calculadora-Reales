@@ -11,7 +11,6 @@ let exchangeRates = {
 
 // Elementos del DOM
 const brlInput = document.getElementById('brlAmount');
-const usdValue = document.getElementById('usdValue');
 const arsTarjetaValue = document.getElementById('arsTarjetaValue');
 const arsPixValue = document.getElementById('arsPixValue');
 const exchangeRatesDiv = document.getElementById('exchangeRates');
@@ -100,10 +99,10 @@ function calculateConversion() {
     const brlAmount = parseFloat(brlInput.value) || 0;
 
     if (brlAmount <= 0) {
-        usdValue.textContent = 'US$ 0.00';
         arsTarjetaValue.textContent = '$ 0.00';
         arsPixValue.textContent = '$ 0.00';
         comparisonDiv.style.display = 'none';
+        document.getElementById('savingsInfo').style.display = 'none';
         return;
     }
 
@@ -121,7 +120,6 @@ function calculateConversion() {
     const ahorroPorcentaje = ((ahorro / arsTarjetaAmount) * 100).toFixed(1);
 
     // Mostrar resultados
-    usdValue.textContent = `US$ ${usdAmount.toFixed(2)}`;
     arsTarjetaValue.textContent = `$ ${arsTarjetaAmount.toFixed(2)}`;
     arsPixValue.textContent = `$ ${arsMepAmount.toFixed(2)}`;
 
